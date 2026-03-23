@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Simple</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f4f4;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        /* Formulaire */
+        .form-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input, textarea, select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            background: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        /* Liste des articles */
+        .articles-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .article {
+            border-bottom: 1px solid #eee;
+            padding: 15px 0;
+        }
+
+        .article:last-child {
+            border-bottom: none;
+        }
+
+        .article h3 {
+            color: #007bff;
+            margin-bottom: 10px;
+        }
+
+        .article-meta {
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .article-content {
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .article-tags {
+            margin-bottom: 10px;
+        }
+
+        .tag {
+            display: inline-block;
+            background: #e9ecef;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 12px;
+            margin-right: 5px;
+        }
+
+        .article-actions button {
+            margin-right: 10px;
+            padding: 5px 10px;
+            font-size: 12px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+        }
+
+        .filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .filters input, .filters select {
+            width: auto;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .status {
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
+
+        .status.online {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status.offline {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📝 Mon Blog Simple</h1>
+        
+        <div id="status" class="status">🔄 Vérification de la connexion...</div>
+
+        <!-- Formulaire -->
+        <div class="form-section">
+            <h2 id="formTitle">➕ Créer un article</h2>
+            <form id="articleForm">
+                <input type="hidden" id="articleId">
+                
+                <div class="form-group">
+                    <label>Titre *</label>
+                    <input type="text" id="title" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Contenu *</label>
+                    <textarea id="content" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Auteur *</label>
+                    <input type="text" id="author" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" id="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label>Catégorie *</label>
+                    <select id="category" required>
+                        <option value="">Choisir...</option>
+                        <option value="Technologie">Technologie</option>
+                        <option value="Développement">Développement</option>
+                        <option value="Design">Design</option>
+                        <option value="Business">Business</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Tags (séparés par des virgules)</label>
+                    <input type="text" id="tags" placeholder="ex: nodejs, sqlite, api">
+                </div>
+                
+                <button type="submit" id="submitBtn">📤 Publier</button>
+                <button type="button" id="cancelBtn" style="display:none;">❌ Annuler</button>
+            </form>
+        </div>
+
+        <!-- Filtres -->
+        <div class="filters">
+            <input type="text" id="filterAuthor" placeholder="Filtrer par auteur">
+            <select id="filterCategory">
+                <option value="">Toutes les catégories</option>
+                <option value="Technologie">Technologie</option>
+                <option value="Développement">Développement</option>
+                <option value="Design">Design</option>
+                <option value="Business">Business</option>
+            </select>
+            <input type="text" id="searchQuery" placeholder="Rechercher...">
+            <button id="searchBtn">🔍 Rechercher</button>
+            <button id="resetBtn">🔄 Réinitialiser</button>
+        </div>
+
+        <!-- Liste des articles -->
+        <div class="articles-section">
+            <h2>📚 Articles</h2>
+            <div id="articlesList">
+                <div class="loading">Chargement des articles...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const API_URL = 'http://localhost:3000/api';
+        let currentEditId = null;
+
+        // Éléments DOM
+        const form = document.getElementById('articleForm');
+        const articlesList = document.getElementById('articlesList');
+        const statusDiv = document.getElementById('status');
+        const filterAuthor = document.getElementById('filterAuthor');
+        const filterCategory = document.getElementById('filterCategory');
+        const searchQuery = document.getElementById('searchQuery');
+        const searchBtn = document.getElementById('searchBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const submitBtn = document.getElementById('submitBtn');
+        const formTitle = document.getElementById('formTitle');
+
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', () => {
+            checkConnection();
+            loadArticles();
+            setupEventListeners();
+            document.getElementById('date').valueAsDate = new Date();
+        });
+
+        // Vérifier la connexion à l'API
+        async function checkConnection() {
+            try {
+                const response = await fetch('http://localhost:3000/');
+                if (response.ok) {
+                    statusDiv.innerHTML = '✅ API connectée - Serveur démarré';
+                    statusDiv.className = 'status online';
+                } else {
+                    throw new Error('API non disponible');
+                }
+            } catch (error) {
+                statusDiv.innerHTML = '❌ API non disponible - Vérifiez que le serveur est démarré (npm start)';
+                statusDiv.className = 'status offline';
+            }
+        }
+
+        // Configurer les événements
+        function setupEventListeners() {
+            form.addEventListener('submit', saveArticle);
+            searchBtn.addEventListener('click', searchArticles);
+            resetBtn.addEventListener('click', resetFilters);
+            cancelBtn.addEventListener('click', cancelEdit);
+            filterAuthor.addEventListener('input', () => loadArticles());
+            filterCategory.addEventListener('change', () => loadArticles());
+        }
+
+        // Charger tous les articles
+        async function loadArticles() {
+            try {
+                let url = `${API_URL}/articles`;
+                const params = [];
+                
+                if (filterAuthor.value) params.push(`author=${encodeURIComponent(filterAuthor.value)}`);
+                if (filterCategory.value) params.push(`category=${encodeURIComponent(filterCategory.value)}`);
+                
+                if (params.length > 0) url += `?${params.join('&')}`;
+                
+                const response = await fetch(url);
+                const articles = await response.json();
+                
+                displayArticles(articles);
+            } catch (error) {
+                console.error('Erreur:', error);
+                articlesList.innerHTML = '<div class="error">❌ Erreur lors du chargement des articles</div>';
+            }
+        }
+
+        // Rechercher des articles
+        async function searchArticles() {
+            const query = searchQuery.value.trim();
+            if (!query) {
+                loadArticles();
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/articles/search?query=${encodeURIComponent(query)}`);
+                const articles = await response.json();
+                displayArticles(articles);
+            } catch (error) {
+                console.error('Erreur:', error);
+                articlesList.innerHTML = '<div class="error">❌ Erreur lors de la recherche</div>';
+            }
+        }
+
+        // Afficher les articles
+        function displayArticles(articles) {
+            if (!articles || articles.length === 0) {
+                articlesList.innerHTML = '<div class="loading">📭 Aucun article trouvé</div>';
+                return;
+            }
+            
+            articlesList.innerHTML = articles.map(article => `
+                <div class="article">
+                    <h3>${escapeHtml(article.title)}</h3>
+                    <div class="article-meta">
+                        ✍️ ${escapeHtml(article.author)} | 
+                        📅 ${formatDate(article.date)} | 
+                        🏷️ ${escapeHtml(article.category)}
+                    </div>
+                    <div class="article-content">
+                        ${escapeHtml(article.content.substring(0, 300))}${article.content.length > 300 ? '...' : ''}
+                    </div>
+                    ${article.tags && article.tags.length > 0 ? `
+                        <div class="article-tags">
+                            ${article.tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}
+                        </div>
+                    ` : ''}
+                    <div class="article-actions">
+                        <button onclick="editArticle(${article.id})">✏️ Modifier</button>
+                        <button onclick="deleteArticle(${article.id})" class="btn-danger">🗑️ Supprimer</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Sauvegarder un article (créer ou modifier)
+        async function saveArticle(e) {
+            e.preventDefault();
+            
+            const article = {
+                title: document.getElementById('title').value,
+                content: document.getElementById('content').value,
+                author: document.getElementById('author').value,
+                date: document.getElementById('date').value,
+                category: document.getElementById('category').value,
+                tags: document.getElementById('tags').value.split(',').map(t => t.trim()).filter(t => t)
+            };
+            
+            try {
+                let response;
+                if (currentEditId) {
+                    // Modifier
+                    response = await fetch(`${API_URL}/articles/${currentEditId}`, {
+                        method: 'PUT',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(article)
+                    });
+                } else {
+                    // Créer
+                    response = await fetch(`${API_URL}/articles`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(article)
+                    });
+                }
+                
+                if (response.ok) {
+                    alert(currentEditId ? '✅ Article modifié !' : '✅ Article créé !');
+                    resetForm();
+                    loadArticles();
+                } else {
+                    const error = await response.json();
+                    alert(`❌ Erreur: ${error.error || 'Une erreur est survenue'}`);
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Erreur lors de l\'enregistrement');
+            }
+        }
+
+        // Éditer un article
+        window.editArticle = async function(id) {
+            try {
+                const response = await fetch(`${API_URL}/articles/${id}`);
+                const article = await response.json();
+                
+                if (response.ok) {
+                    currentEditId = id;
+                    document.getElementById('title').value = article.title;
+                    document.getElementById('content').value = article.content;
+                    document.getElementById('author').value = article.author;
+                    document.getElementById('date').value = article.date;
+                    document.getElementById('category').value = article.category;
+                    document.getElementById('tags').value = article.tags ? article.tags.join(', ') : '';
+                    
+                    formTitle.innerHTML = '✏️ Modifier l\'article';
+                    submitBtn.textContent = '💾 Mettre à jour';
+                    cancelBtn.style.display = 'inline-block';
+                    
+                    // Scroll vers le formulaire
+                    document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert('❌ Impossible de charger l\'article');
+            }
+        };
+
+        // Supprimer un article
+        window.deleteArticle = async function(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet article ?')) {
+                try {
+                    const response = await fetch(`${API_URL}/articles/${id}`, {
+                        method: 'DELETE'
+                    });
+                    
+                    if (response.ok) {
+                        alert('✅ Article supprimé !');
+                        loadArticles();
+                        if (currentEditId === id) cancelEdit();
+                    } else {
+                        alert('❌ Erreur lors de la suppression');
+                    }
+                } catch (error) {
+                    console.error('Erreur:', error);
+                    alert('❌ Erreur lors de la suppression');
+                }
+            }
+        };
+
+        // Annuler l'édition
+        function cancelEdit() {
+            resetForm();
+        }
+
+        // Réinitialiser le formulaire
+        function resetForm() {
+            form.reset();
+            currentEditId = null;
+            formTitle.innerHTML = '➕ Créer un article';
+            submitBtn.textContent = '📤 Publier';
+            cancelBtn.style.display = 'none';
+            document.getElementById('date').valueAsDate = new Date();
+        }
+
+        // Réinitialiser les filtres
+        function resetFilters() {
+            filterAuthor.value = '';
+            filterCategory.value = '';
+            searchQuery.value = '';
+            loadArticles();
+        }
+
+        // Utilitaires
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('fr-FR');
+        }
+    </script>
+</body>
+</html>
